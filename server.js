@@ -1,6 +1,7 @@
 require("dotenv").config();
 const cookieParser = require("cookie-parser");
 const express = require("express");
+const multer = require("multer");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const db = require("better-sqlite3")("InsideDEKA.db");
@@ -17,14 +18,6 @@ const CreateTables = db.transaction(() => {
         password STRING NOT NULL,
         admin INTEGER NOT NULL
     )`).run();
-    db.prepare(`
-        CREATE TABLE IF NOT EXISTS resources (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        section INTEGER NOT NULL,
-        title STRING NOT NULL,
-        description STRING NOT NULL,
-        link STRING NOT NULL
-    )`).run();
 })
 
 CreateTables();
@@ -34,6 +27,17 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(express.static("public"));
 app.use(cookieParser());
+
+const storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        cb(null, 'uploads/');
+    },
+    filename: function (req, file, cb) {
+        cb(null, Date.now() + '-' + file.originalname);
+    }
+});
+
+const upload = multer({ storage: storage });
 
 app.use(function (req, res, next) {
     res.locals.errors = [];
@@ -49,8 +53,31 @@ app.use(function (req, res, next) {
     next();
 });
 
+app.post("/create-exam", upload.single('file'), (req, res) => {
+    const { name, description } = req.body;
+    const file = req.file;
+
+    if (!name || !description || !file) {
+        return res.render("Create", { errors: ["All fields are required"] });
+    }
+
+    // Handle the file and form data as needed
+    console.log("File uploaded:", file);
+    res.render("Exams")
+});
+
+app.get("/exams/create", (req, res) => {
+    res.render("Create", { sectionNum, user: req.user });
+});
+app.get("/cases/create", (req, res) => {
+    res.render("CreateCase", { sectionNum, user: req.user });
+});
+
 app.get("/exams-sec1", (req, res) => {
     sectionNum = 1;
+    if (!req.user) {
+        res.render("Exams", { sectionNum, admin: 0, user: req.user });
+    }
     const adminOrNot = db.prepare("SELECT * FROM users WHERE id = ?");
     const curUser = adminOrNot.get(req.user.userid);
     const admin = curUser.admin;
@@ -59,6 +86,9 @@ app.get("/exams-sec1", (req, res) => {
 });
 app.get("/exams-sec2", (req, res) => {
     sectionNum = 2;
+    if (!req.user) {
+        res.render("Exams", { sectionNum, admin: 0, user: req.user });
+    }
     const adminOrNot = db.prepare("SELECT * FROM users WHERE id = ?");
     const curUser = adminOrNot.get(req.user.userid);
     const admin = curUser.admin;
@@ -67,6 +97,9 @@ app.get("/exams-sec2", (req, res) => {
 });
 app.get("/exams-sec3", (req, res) => {
     sectionNum = 3;
+    if (!req.user) {
+        res.render("Exams", { sectionNum, admin: 0, user: req.user });
+    }
     const adminOrNot = db.prepare("SELECT * FROM users WHERE id = ?");
     const curUser = adminOrNot.get(req.user.userid);
     const admin = curUser.admin;
@@ -75,6 +108,9 @@ app.get("/exams-sec3", (req, res) => {
 });
 app.get("/exams-sec4", (req, res) => {
     sectionNum = 4;
+    if (!req.user) {
+        res.render("Exams", { sectionNum, admin: 0, user: req.user });
+    }
     const adminOrNot = db.prepare("SELECT * FROM users WHERE id = ?");
     const curUser = adminOrNot.get(req.user.userid);
     const admin = curUser.admin;
@@ -83,6 +119,9 @@ app.get("/exams-sec4", (req, res) => {
 });
 app.get("/exams-sec5", (req, res) => {
     sectionNum = 5;
+    if (!req.user) {
+        res.render("Exams", { sectionNum, admin: 0, user: req.user });
+    }
     const adminOrNot = db.prepare("SELECT * FROM users WHERE id = ?");
     const curUser = adminOrNot.get(req.user.userid);
     const admin = curUser.admin;
@@ -91,6 +130,9 @@ app.get("/exams-sec5", (req, res) => {
 });
 app.get("/exams-sec6", (req, res) => {
     sectionNum = 6;
+    if (!req.user) {
+        res.render("Exams", { sectionNum, admin: 0, user: req.user });
+    }
     const adminOrNot = db.prepare("SELECT * FROM users WHERE id = ?");
     const curUser = adminOrNot.get(req.user.userid);
     const admin = curUser.admin;
@@ -100,6 +142,9 @@ app.get("/exams-sec6", (req, res) => {
 
 app.get("/cases-sec1", (req, res) => {
     sectionNum = 1;
+    if (!req.user) {
+        res.render("Exams", { sectionNum, admin: 0, user: req.user });
+    }
     const adminOrNot = db.prepare("SELECT * FROM users WHERE id = ?");
     const curUser = adminOrNot.get(req.user.userid);
     const admin = curUser.admin;
@@ -108,6 +153,9 @@ app.get("/cases-sec1", (req, res) => {
 });
 app.get("/cases-sec2", (req, res) => {
     sectionNum = 2;
+    if (!req.user) {
+        res.render("Exams", { sectionNum, admin: 0, user: req.user });
+    }
     const adminOrNot = db.prepare("SELECT * FROM users WHERE id = ?");
     const curUser = adminOrNot.get(req.user.userid);
     const admin = curUser.admin;
@@ -116,6 +164,9 @@ app.get("/cases-sec2", (req, res) => {
 });
 app.get("/cases-sec3", (req, res) => {
     sectionNum = 3;
+    if (!req.user) {
+        res.render("Exams", { sectionNum, admin: 0, user: req.user });
+    }
     const adminOrNot = db.prepare("SELECT * FROM users WHERE id = ?");
     const curUser = adminOrNot.get(req.user.userid);
     const admin = curUser.admin;
@@ -124,6 +175,9 @@ app.get("/cases-sec3", (req, res) => {
 });
 app.get("/cases-sec4", (req, res) => {
     sectionNum = 4;
+    if (!req.user) {
+        res.render("Exams", { sectionNum, admin: 0, user: req.user });
+    }
     const adminOrNot = db.prepare("SELECT * FROM users WHERE id = ?");
     const curUser = adminOrNot.get(req.user.userid);
     const admin = curUser.admin;
@@ -132,6 +186,9 @@ app.get("/cases-sec4", (req, res) => {
 });
 app.get("/cases-sec5", (req, res) => {
     sectionNum = 5;
+    if (!req.user) {
+        res.render("Exams", { sectionNum, admin: 0, user: req.user });
+    }
     const adminOrNot = db.prepare("SELECT * FROM users WHERE id = ?");
     const curUser = adminOrNot.get(req.user.userid);
     const admin = curUser.admin;
@@ -140,6 +197,9 @@ app.get("/cases-sec5", (req, res) => {
 });
 app.get("/cases-sec6", (req, res) => {
     sectionNum = 6;
+    if (!req.user) {
+        res.render("Exams", { sectionNum, admin: 0, user: req.user });
+    }
     const adminOrNot = db.prepare("SELECT * FROM users WHERE id = ?");
     const curUser = adminOrNot.get(req.user.userid);
     const admin = curUser.admin;
