@@ -1,0 +1,212 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+</head>
+<body>
+    <%- include('includes/nav') %>
+    <img src="/resources/Front Page Background.jpg" class="img-fluid ht" alt="Responsive image">
+
+    <div class="container-fluid cnt-bg">
+        <div class="row justify-content-center">
+        <div class="text-center col-12 col-md-6">
+            <p class="txt-clr2">InsideDEKA is a student-led start-up that aims to develop the next generation of leaders, dreamers, and academic achievers.
+            </p>
+        </div>
+    </div>
+    </div>
+
+    <div class="container py-5">
+        <!-- First row of cards -->
+        <div class="container py-4">
+            <div class="row g-4">
+              <!-- LEFT COLUMN -->
+              <div class="col-lg-4">
+                <!-- Large image with overlay text -->
+                <div class="img-overlay-container big-round">
+                  <img
+                    src="/resources/Image of Prantik.jpg"
+                    alt="President Photo"
+                    class="img-fluid"
+                  />
+                  <div class="img-overlay-text" style="background: rgba(0,0,0,0.3);">
+                    <h2 class="card-title">Welcome from the Presidents</h2>
+                    <p>
+                      At Deca Insider, our guiding principle is “Aim High, Be Kind, and Dare to be Different.” 
+                      This motto, deeply rooted at our core, combined with exceptional teaching sets us apart.
+                    </p>
+                    <a href="#" class="btn btn-primary">Read More</a>
+                  </div>
+                </div>
+              </div>
+        
+              <!-- RIGHT COLUMN -->
+              <div class="col-lg-8 d-flex flex-column gap-4">
+                <!-- Top card: "Arrange a Personal Visit" -->
+                <div class="dark-card p-4 flex-grow-1">
+                <div class="card-body">
+                  <h3 class="card-title" class="mb-3">Arrange a Personal Visit</h3>
+                  <p class="card-text">
+                    To learn more about our mission, curriculum, and journey, 
+                    arrange a FREE personal meeting with one of our executives.
+                  </p>
+                  <a href="#" class="btn">Arrange a Visit</a>
+                </div>
+                </div>
+        
+                <!-- Bottom row with two cards side by side -->
+                <div class="row g-4 flex-grow-1">
+                  <!-- Shield Card -->
+                  <div class="col-md-6">
+                    <div class="dark-card d-flex align-items-center justify-content-center h-100">
+                      <!-- Shield icon (centered) -->
+                      <img
+                        src="/resources/Filler image.jpg"
+                        alt="Shield Logo"
+                        style="max-width: 100%; border-radius: 1rem;"
+                      />
+                    </div>
+                  </div>
+        
+                  <!-- Admissions Card -->
+                  <div class="col-md-6">
+                    <div class="card h-100" style="border-radius: 1rem; background-color: #f1f1ff;">
+                      <div class="card-body d-flex flex-column justify-content-center">
+                        <h4 class="card-title">Admissions</h4>
+                        <p class="card-text">Select a plan today to begin your journey!</p>
+                        <a href="#" class="btn">Read More</a>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- END RIGHT COLUMN -->
+            </div>
+          </div>
+    
+        <!-- Second row: "The Ethos and the Environment" on the left, big image on the right -->
+        <div class="row">
+          <div class="col-lg-7 mb-4">
+            <div class="card dark-card h-100">
+              <div class="card-body">
+                <h5 class="card-title">The Ethos and the Environment</h5>
+                <p class="card-text">
+                  At Kentwood Academy, our ethos goes beyond academia. We believe in nurturing the 
+                  whole child, promoting resilience, creativity, and global awareness. Set against 
+                  the backdrop of Kent's natural beauty, our campus offers an environment where 
+                  students are inspired daily, both by the lessons in the classroom and the serenity 
+                  outside.
+                </p>
+                <a href="/" class="btn btn-custom">Read More</a>
+              </div>
+            </div>
+          </div>
+    
+          <div class="col-lg-5 mb-4">
+            <!-- Example group photo -->
+            <img
+              src="/resources/Ethos and Environment.jpg"
+              alt="Students"
+              class="img-fluid rounded"
+            />
+          </div>
+        </div>
+      </div>
+    <%- include('includes/foot') %>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js" integrity="sha384-0pUGZvbkm6XF6gxjEnlmuGrJXVbNuzT9qBBavbLwCsOGabYfZo0T0to5eqruptLy" crossorigin="anonymous"></script>
+
+</body>
+</html>
+
+<style>
+    .nav-bg {
+        background-color: #002a5e;
+    }
+    .img-fluid {
+        width: 100%;
+        height: auto;
+    }
+    .text-clr {
+        color: white;
+    }
+    .cnt-bg {
+        background-color: #b0b3b8;
+        height: 300px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    .txt-clr2 {
+        color: #0a4d8c;
+        font-family: Georgia, 'Times New Roman', Times, serif;
+        font-size: 30px;
+        word-spacing: 0.1em;
+    }
+    .dark-card {
+      background-color: #002a5e;
+      color: #fff;
+      border: none;
+      border-radius: 1rem; /* adjust as needed */
+      font-family: 'Times New Roman', Times, serif;
+    }
+    .dark-card a.btn {
+      border-radius: 1rem;
+      border-color: #fff;
+      background-color: #002a5e; /* slightly darker */
+      color: #fff;
+    }
+    .dark-card a.btn:hover {
+      background-color: #f9b748;
+      color: #002a5e;
+    }
+    .btn {
+        border-radius: 1rem;
+        border-color: #fff;
+        background-color: #002a5e;
+        color: #fff;
+    }
+    .btn:hover {
+        background-color: #f9b748;
+        color: #002a5e;
+    }
+    .big-round {
+      border-radius: 1rem; /* adjusting corner radius */
+      overflow: hidden;    /* ensure image corners are rounded */
+    }
+    /* Overlay text on left image */
+    .img-overlay-container {
+      position: relative;
+    }
+    .img-overlay-text {
+      position: absolute;
+      bottom: 0;
+      padding: 1rem;
+      color: #fff;
+      font-family: 'Times New Roman', Times, serif;
+      padding-left: 3rem;
+      padding-right: 3rem;
+      padding-bottom: 3rem;
+    }
+    .card-title {
+      font-size: 1.75rem;
+      font-weight: 600;
+    }
+    .card {
+        font-family: 'Times New Roman', Times, serif;
+    }
+    .card-body {
+        padding: 3rem;
+    }
+    .card-text {
+        font-size: 1.25rem;
+    }
+    .ht {
+        height: 900px;
+    }
+</style>

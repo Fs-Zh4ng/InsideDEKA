@@ -1,0 +1,83 @@
+<nav class="navbar navbar-expand-lg nav-bg sticky-top">
+    <div class="container">
+    <a class="navbar-brand text-clr" href="/">Home</a>
+    <button class="navbar-toggler text-clr" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        Menu
+      </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+    <ul class="navbar-nav mr-auto">
+    <li class="nav-item active">
+        <a href="/fundementals" class="nav-link active text-clr">Fundementals</a>
+    </li>
+    <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle text-clr active" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          Cases
+        </a>
+        <div class="dropdown-menu active" aria-labelledby="navbarDropdown">
+          <a class="dropdown-item" href="/cases-sec1">Section 1</a>
+          <a class="dropdown-item" href="/cases-sec2">Section 2</a>
+          <a class="dropdown-item" href="/cases-sec3">Section 3</a>
+          <a class="dropdown-item" href="/cases-sec4">Section 4</a>
+          <a class="dropdown-item" href="/cases-sec5">Section 5</a>
+          <a class="dropdown-item" href="/cases-sec6">Section 6</a>
+        </div>
+    </li>
+    <li class="nav-item dropdown active">
+        <a class="nav-link dropdown-toggle text-clr active" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          Exams
+        </a>
+        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+          <a class="dropdown-item" href="/exams-sec1">Section 1</a>
+          <a class="dropdown-item" href="/exams-sec2">Section 2</a>
+          <a class="dropdown-item" href="/exams-sec3">Section 3</a>
+          <a class="dropdown-item" href="/exams-sec4">Section 4</a>
+          <a class="dropdown-item" href="/exams-sec5">Section 5</a>
+          <a class="dropdown-item" href="/exams-sec6">Section 6</a>
+        </div>
+    </li>
+    <li class="nav-item dropdown active">
+        <a class="nav-link dropdown-toggle text-clr active" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          About Us
+        </a>
+        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+          <a class="dropdown-item" href="/About-InsideDEKA">What is InsideDEKA</a>
+          <a class="dropdown-item" href="/Our-Team">Our Team</a>
+        </div>
+    </li>
+    </ul>
+    <ul class="navbar-nav ms-auto">
+        <% if (user) { %>
+            <li class="nav-item active">
+                <a href="/logout" class="nav-link active text-clr">Log Out</a>
+            </li>
+            <li class="nav-item active">
+                <a href="/profile" class="nav-link active text-clr"><%- user.username %></a>
+            </li>
+        <% } else { %>
+            <li class="nav-item active">
+                <a href="/sign-up" class="nav-link active text-clr">Sign Up</a>
+            </li>
+            <li class="nav-item active">
+                <a href="/login" class="nav-link active text-clr">Log In</a>
+            </li>
+        <% } %>
+        </ul>
+    </div>
+
+    </div>
+</nav>
+
+<style>
+    .nav-link:hover, .dropdown:hover, .navbar-brand:hover {
+        color: #f9b748;
+    }
+    .dropdown-menu {
+        background-color: #002a5e;
+    }
+    .dropdown-item {
+        color: white;
+    }
+    .dropdown-item:hover {
+        background-color: #f9b748;
+    }
+</style>
