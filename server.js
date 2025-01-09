@@ -7,8 +7,8 @@ const bcrypt = require("bcrypt");
 const db = require("better-sqlite3")("InsideDEKA.db");
 db.pragma("Journal_Mode = WAL");
 const bodyParser = require("body-parser");
+const path = require("path");
 
-let sectionNum = 0;
 
 const CreateTables = db.transaction(() => {
     db.prepare(`
@@ -18,6 +18,24 @@ const CreateTables = db.transaction(() => {
         password STRING NOT NULL,
         admin INTEGER NOT NULL
     )`).run();
+    db.prepare(`
+        CREATE TABLE IF NOT EXISTS files (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            sectionNum INTEGER,
+            type INTEGER, -- 1 for exam, 2 for case
+            name TEXT,
+            description TEXT,
+            filePath TEXT,
+            uploadDate TEXT
+        );
+    `).run();
+    db.exec(`
+        CREATE TABLE IF NOT EXISTS settings (
+            key TEXT PRIMARY KEY,
+            value TEXT
+        );
+    `);
+    db.prepare("CREATE INDEX IF NOT EXISTS sectionNumIndex ON files (sectionNum)").run();
 })
 
 CreateTables();
@@ -28,9 +46,24 @@ app.use(bodyParser.json());
 app.use(express.static("public"));
 app.use(cookieParser());
 
+app.use('/Exam Resources', express.static(path.join(__dirname, 'Exam Resources')));
+
+let sectionNum = 0;
+
+function initializeSectionNum() {
+    const row = db.prepare("SELECT value FROM settings WHERE key = 'sectionNum'").get();
+    if (row) {
+        sectionNum = parseInt(row.value, 10);
+    } else {
+        db.prepare("INSERT INTO settings (key, value) VALUES ('sectionNum', ?)").run(sectionNum.toString());
+    }
+}
+
+initializeSectionNum();
+
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
-        cb(null, 'uploads/');
+        cb(null, 'Exam Resources');
     },
     filename: function (req, file, cb) {
         cb(null, Date.now() + '-' + file.originalname);
@@ -53,6 +86,13 @@ app.use(function (req, res, next) {
     next();
 });
 
+function updateSectionNum(newSectionNum) {
+    sectionNum = newSectionNum;
+    db.prepare("UPDATE settings SET value = ? WHERE key = 'sectionNum'").run(sectionNum.toString());
+}
+
+
+
 app.post("/create-exam", upload.single('file'), (req, res) => {
     const { name, description } = req.body;
     const file = req.file;
@@ -61,9 +101,21 @@ app.post("/create-exam", upload.single('file'), (req, res) => {
         return res.render("Create", { errors: ["All fields are required"] });
     }
 
+    const insertFile = db.prepare(`
+        INSERT INTO files (sectionNum, type, name, description, filePath, uploadDate)
+        VALUES (?, ?, ?, ?, ?, ?)
+    `);
+    insertFile.run(sectionNum, 1, name, description, file.filename, new Date().toISOString());
+
     // Handle the file and form data as needed
     console.log("File uploaded:", file);
-    res.render("Exams")
+
+    // Redirect to the Exams or Cases page
+    res.redirect(`/exams-sec${sectionNum}`); // Change to "/cases" if needed
+});
+app.get('/pdf/Exam%20Resources/:file', (req, res) => {
+    const filePath = path.join(__dirname, 'Exam Resources', req.params.file);
+    res.sendFile(filePath);
 });
 
 app.get("/exams/create", (req, res) => {
@@ -75,136 +127,147 @@ app.get("/cases/create", (req, res) => {
 
 app.get("/exams-sec1", (req, res) => {
     sectionNum = 1;
+    const resources = db.prepare("SELECT * FROM files WHERE sectionNum = ? AND type = 1").all(sectionNum);
     if (!req.user) {
-        res.render("Exams", { sectionNum, admin: 0, user: req.user });
+        res.render("Exams", { sectionNum, admin: 0, user: req.user, resources });
     }
     const adminOrNot = db.prepare("SELECT * FROM users WHERE id = ?");
     const curUser = adminOrNot.get(req.user.userid);
     const admin = curUser.admin;
     console.log(admin);
-    res.render("Exams", { sectionNum, admin, user: req.user });
+    res.render("Exams", { sectionNum, admin, user: req.user, resources });
 });
 app.get("/exams-sec2", (req, res) => {
     sectionNum = 2;
+    const resources = db.prepare("SELECT * FROM files WHERE sectionNum = ? AND type = 1").all(sectionNum);
+
     if (!req.user) {
-        res.render("Exams", { sectionNum, admin: 0, user: req.user });
+        res.render("Exams", { sectionNum, admin: 0, user: req.user, resources });
     }
     const adminOrNot = db.prepare("SELECT * FROM users WHERE id = ?");
     const curUser = adminOrNot.get(req.user.userid);
     const admin = curUser.admin;
     console.log(admin);
-    res.render("Exams", { sectionNum, admin, user: req.user });
+    res.render("Exams", { sectionNum, admin, user: req.user, resources });
 });
 app.get("/exams-sec3", (req, res) => {
     sectionNum = 3;
+    const resources = db.prepare("SELECT * FROM files WHERE sectionNum = ? AND type = 1").all(sectionNum);
+
     if (!req.user) {
-        res.render("Exams", { sectionNum, admin: 0, user: req.user });
+        res.render("Exams", { sectionNum, admin: 0, user: req.user, resources });
     }
     const adminOrNot = db.prepare("SELECT * FROM users WHERE id = ?");
     const curUser = adminOrNot.get(req.user.userid);
     const admin = curUser.admin;
     console.log(admin);
-    res.render("Exams", { sectionNum, admin, user: req.user });
+    res.render("Exams", { sectionNum, admin, user: req.user, resources });
 });
 app.get("/exams-sec4", (req, res) => {
     sectionNum = 4;
+    const resources = db.prepare("SELECT * FROM files WHERE sectionNum = ? AND type = 1").all(sectionNum);
+
     if (!req.user) {
-        res.render("Exams", { sectionNum, admin: 0, user: req.user });
+        res.render("Exams", { sectionNum, admin: 0, user: req.user, resources });
     }
     const adminOrNot = db.prepare("SELECT * FROM users WHERE id = ?");
     const curUser = adminOrNot.get(req.user.userid);
     const admin = curUser.admin;
     console.log(admin);
-    res.render("Exams", { sectionNum, admin, user: req.user });
+    res.render("Exams", { sectionNum, admin, user: req.user, resources });
 });
 app.get("/exams-sec5", (req, res) => {
     sectionNum = 5;
+    const resources = db.prepare("SELECT * FROM files WHERE sectionNum = ? AND type = 1").all(sectionNum);
+
     if (!req.user) {
-        res.render("Exams", { sectionNum, admin: 0, user: req.user });
+        res.render("Exams", { sectionNum, admin: 0, user: req.user, resources });
     }
     const adminOrNot = db.prepare("SELECT * FROM users WHERE id = ?");
     const curUser = adminOrNot.get(req.user.userid);
     const admin = curUser.admin;
     console.log(admin);
-    res.render("Exams", { sectionNum, admin, user: req.user });
+    res.render("Exams", { sectionNum, admin, user: req.user, resources });
 });
 app.get("/exams-sec6", (req, res) => {
     sectionNum = 6;
+    const resources = db.prepare("SELECT * FROM files WHERE sectionNum = ? AND type = 1").all(sectionNum);
+
     if (!req.user) {
-        res.render("Exams", { sectionNum, admin: 0, user: req.user });
+        res.render("Exams", { sectionNum, admin: 0, user: req.user, resources });
     }
     const adminOrNot = db.prepare("SELECT * FROM users WHERE id = ?");
     const curUser = adminOrNot.get(req.user.userid);
     const admin = curUser.admin;
     console.log(admin);
-    res.render("Exams", { sectionNum, admin, user: req.user });
+    res.render("Exams", { sectionNum, admin, user: req.user, resources });
 });
 
 app.get("/cases-sec1", (req, res) => {
     sectionNum = 1;
     if (!req.user) {
-        res.render("Exams", { sectionNum, admin: 0, user: req.user });
+        res.render("Exams", { sectionNum, admin: 0, user: req.user, resources });
     }
     const adminOrNot = db.prepare("SELECT * FROM users WHERE id = ?");
     const curUser = adminOrNot.get(req.user.userid);
     const admin = curUser.admin;
     console.log(admin);
-    res.render("Cases", { sectionNum, admin, user: req.user });
+    res.render("Cases", { sectionNum, admin, user: req.user, resources });
 });
 app.get("/cases-sec2", (req, res) => {
     sectionNum = 2;
     if (!req.user) {
-        res.render("Exams", { sectionNum, admin: 0, user: req.user });
+        res.render("Exams", { sectionNum, admin: 0, user: req.user, resources });
     }
     const adminOrNot = db.prepare("SELECT * FROM users WHERE id = ?");
     const curUser = adminOrNot.get(req.user.userid);
     const admin = curUser.admin;
     console.log(admin);
-    res.render("Cases", { sectionNum, admin, user: req.user });
+    res.render("Cases", { sectionNum, admin, user: req.user, resources });
 });
 app.get("/cases-sec3", (req, res) => {
     sectionNum = 3;
     if (!req.user) {
-        res.render("Exams", { sectionNum, admin: 0, user: req.user });
+        res.render("Exams", { sectionNum, admin: 0, user: req.user, resources });
     }
     const adminOrNot = db.prepare("SELECT * FROM users WHERE id = ?");
     const curUser = adminOrNot.get(req.user.userid);
     const admin = curUser.admin;
     console.log(admin);
-    res.render("Cases", { sectionNum, admin, user: req.user });
+    res.render("Cases", { sectionNum, admin, user: req.user, resources });
 });
 app.get("/cases-sec4", (req, res) => {
     sectionNum = 4;
     if (!req.user) {
-        res.render("Exams", { sectionNum, admin: 0, user: req.user });
+        res.render("Exams", { sectionNum, admin: 0, user: req.user, resources });
     }
     const adminOrNot = db.prepare("SELECT * FROM users WHERE id = ?");
     const curUser = adminOrNot.get(req.user.userid);
     const admin = curUser.admin;
     console.log(admin);
-    res.render("Cases", { sectionNum, admin, user: req.user });
+    res.render("Cases", { sectionNum, admin, user: req.user, resources });
 });
 app.get("/cases-sec5", (req, res) => {
     sectionNum = 5;
     if (!req.user) {
-        res.render("Exams", { sectionNum, admin: 0, user: req.user });
+        res.render("Exams", { sectionNum, admin: 0, user: req.user, resources });
     }
     const adminOrNot = db.prepare("SELECT * FROM users WHERE id = ?");
     const curUser = adminOrNot.get(req.user.userid);
     const admin = curUser.admin;
     console.log(admin);
-    res.render("Cases", { sectionNum, admin, user: req.user });
+    res.render("Cases", { sectionNum, admin, user: req.user, resources });
 });
 app.get("/cases-sec6", (req, res) => {
     sectionNum = 6;
     if (!req.user) {
-        res.render("Exams", { sectionNum, admin: 0, user: req.user });
+        res.render("Exams", { sectionNum, admin: 0, user: req.user, resources });
     }
     const adminOrNot = db.prepare("SELECT * FROM users WHERE id = ?");
     const curUser = adminOrNot.get(req.user.userid);
     const admin = curUser.admin;
     console.log(admin);
-    res.render("Cases", { sectionNum, admin, user: req.user });
+    res.render("Cases", { sectionNum, admin, user: req.user, resources });
 });
 
 

@@ -31,7 +31,27 @@
             <% } %>
             <div class="col-2"></div>
         </div>
+
+        <div class="row">
+            <% resources.forEach(resource => { %>
+                <div class="col-12 mb-3">
+                    <div class="card">
+                        <div class="card-body">
+                            <h3 class="card-title"><a href="/pdf/<%= resource.filePath %>" target="_blank"><%= resource.name %></a></h3>
+                            <p class="card-text"><%= resource.description %></p>
+                        </div>
+                    </div>
+                </div>
+            <% }) %>
+        </div>
+
     </div>
+
+    <script>
+        function openFile(filePath) {
+            window.open(filePath, '_blank');
+        }
+    </script>
     <%- include("includes/foot") %>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js" integrity="sha384-0pUGZvbkm6XF6gxjEnlmuGrJXVbNuzT9qBBavbLwCsOGabYfZo0T0to5eqruptLy" crossorigin="anonymous"></script>
