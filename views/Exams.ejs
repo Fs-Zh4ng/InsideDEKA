@@ -33,15 +33,29 @@
         </div>
 
         <div class="row">
+            <div class="col-2"></div>
             <% resources.forEach(resource => { %>
-                <div class="col-12 mb-3">
+                <div class="col-8 mb-3">
                     <div class="card">
-                        <div class="card-body">
-                            <h3 class="card-title"><a href="/pdf/<%= resource.filePath %>" target="_blank"><%= resource.name %></a></h3>
-                            <p class="card-text"><%= resource.description %></p>
+                        <div class="card-body" style="margin-left: 1rem;">
+                            <h class="card-title" style="margin-left: 1.4rem;"><a href="/pdf/<%= resource.filePath %>" target="_blank"><%= resource.name %></a></h>
+                            <div class="container-fluid">
+                            <div class="row">
+                                <div class="col-10">
+                                    <p class="card-text"><%= resource.description %></p>
+                                </div>
+                                <div class="col-2">
+                                    <% if (user && admin == 1) { %>
+                                        <a href="/edit/<%= resource._id %>" class="btn btn-primary">Edit</a>
+                                    <% } %>
+                                </div>
                         </div>
+                        </div>
+                        </div>
+                        
                     </div>
                 </div>
+            </div>
             <% }) %>
         </div>
 

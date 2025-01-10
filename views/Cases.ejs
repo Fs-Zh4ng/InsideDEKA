@@ -31,7 +31,37 @@
             <% } %>
             <div class="col-2"></div>
         </div>
+        <div class="row">
+            <div class="col-2"></div>
+            <% resources.forEach(resource => { %>
+                <div class="col-8 mb-3">
+                    <div class="card">
+                        <div class="card-body" style="margin-left: 1rem;">
+                            <h class="card-title" style="margin-left: 1.4rem;"><a href="/pdf/<%= resource.filePath %>" target="_blank"><%= resource.name %></a></h>
+                            <div class="container-fluid">
+                            <div class="row">
+                                <div class="col-10">
+                                    <p class="card-text"><%= resource.description %></p>
+                                </div>
+                                <div class="col-2">
+                                    <% if (user && admin == 1) { %>
+                                        <a href="/edit/<%= resource._id %>" class="btn btn-primary">Edit</a>
+                                    <% } %>
+                                </div>
+                        </div>
+                        </div>
+                        </div>
+                        
+                    </div>
+                </div>
+            </div>
+            <% }) %>
+        </div>
     </div>
+
+    
+
+</div>
     <%- include("includes/foot") %>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js" integrity="sha384-0pUGZvbkm6XF6gxjEnlmuGrJXVbNuzT9qBBavbLwCsOGabYfZo0T0to5eqruptLy" crossorigin="anonymous"></script>

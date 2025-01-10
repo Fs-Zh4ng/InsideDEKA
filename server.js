@@ -72,6 +72,17 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage: storage });
 
+const CaseStorage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        cb(null, 'Case Resources');
+    },
+    filename: function (req, file, cb) {
+        cb(null, Date.now() + '-' + file.originalname);
+    }
+});
+
+const store = multer({ storage: storage });
+
 app.use(function (req, res, next) {
     res.locals.errors = [];
     
@@ -100,6 +111,7 @@ app.post("/create-exam", upload.single('file'), (req, res) => {
     if (!name || !description || !file) {
         return res.render("Create", { errors: ["All fields are required"] });
     }
+    console.log(file.filename);
 
     const insertFile = db.prepare(`
         INSERT INTO files (sectionNum, type, name, description, filePath, uploadDate)
@@ -113,8 +125,35 @@ app.post("/create-exam", upload.single('file'), (req, res) => {
     // Redirect to the Exams or Cases page
     res.redirect(`/exams-sec${sectionNum}`); // Change to "/cases" if needed
 });
-app.get('/pdf/Exam%20Resources/:file', (req, res) => {
+app.get('/pdf/:file', (req, res) => {
     const filePath = path.join(__dirname, 'Exam Resources', req.params.file);
+    console.log(filePath)
+    res.sendFile(filePath);
+});
+app.post("/create-case", store.single('file'), (req, res) => {
+    const { name, description } = req.body;
+    const file = req.file;
+
+    if (!name || !description || !file) {
+        return res.render("Create", { errors: ["All fields are required"] });
+    }
+    console.log(file.filename);
+
+    const insertFile = db.prepare(`
+        INSERT INTO files (sectionNum, type, name, description, filePath, uploadDate)
+        VALUES (?, ?, ?, ?, ?, ?)
+    `);
+    insertFile.run(sectionNum, 0, name, description, file.filename, new Date().toISOString());
+
+    // Handle the file and form data as needed
+    console.log("File uploaded:", file);
+
+    // Redirect to the Exams or Cases page
+    res.redirect(`/cases-sec${sectionNum}`); // Change to "/cases" if needed
+});
+app.get('/pdf/:file', (req, res) => {
+    const filePath = path.join(__dirname, 'Case Resources', req.params.file);
+    console.log(filePath)
     res.sendFile(filePath);
 });
 
@@ -128,6 +167,7 @@ app.get("/cases/create", (req, res) => {
 app.get("/exams-sec1", (req, res) => {
     sectionNum = 1;
     const resources = db.prepare("SELECT * FROM files WHERE sectionNum = ? AND type = 1").all(sectionNum);
+    console.log(resources);
     if (!req.user) {
         res.render("Exams", { sectionNum, admin: 0, user: req.user, resources });
     }
@@ -140,7 +180,7 @@ app.get("/exams-sec1", (req, res) => {
 app.get("/exams-sec2", (req, res) => {
     sectionNum = 2;
     const resources = db.prepare("SELECT * FROM files WHERE sectionNum = ? AND type = 1").all(sectionNum);
-
+    console.log(resources);
     if (!req.user) {
         res.render("Exams", { sectionNum, admin: 0, user: req.user, resources });
     }
@@ -205,6 +245,7 @@ app.get("/exams-sec6", (req, res) => {
 
 app.get("/cases-sec1", (req, res) => {
     sectionNum = 1;
+    const resources = db.prepare("SELECT * FROM files WHERE sectionNum = ? AND type = 0").all(sectionNum);
     if (!req.user) {
         res.render("Exams", { sectionNum, admin: 0, user: req.user, resources });
     }
@@ -216,6 +257,7 @@ app.get("/cases-sec1", (req, res) => {
 });
 app.get("/cases-sec2", (req, res) => {
     sectionNum = 2;
+    const resources = db.prepare("SELECT * FROM files WHERE sectionNum = ? AND type = 0").all(sectionNum);
     if (!req.user) {
         res.render("Exams", { sectionNum, admin: 0, user: req.user, resources });
     }
@@ -227,6 +269,7 @@ app.get("/cases-sec2", (req, res) => {
 });
 app.get("/cases-sec3", (req, res) => {
     sectionNum = 3;
+    const resources = db.prepare("SELECT * FROM files WHERE sectionNum = ? AND type = 0").all(sectionNum);
     if (!req.user) {
         res.render("Exams", { sectionNum, admin: 0, user: req.user, resources });
     }
@@ -238,6 +281,7 @@ app.get("/cases-sec3", (req, res) => {
 });
 app.get("/cases-sec4", (req, res) => {
     sectionNum = 4;
+    const resources = db.prepare("SELECT * FROM files WHERE sectionNum = ? AND type = 0").all(sectionNum);
     if (!req.user) {
         res.render("Exams", { sectionNum, admin: 0, user: req.user, resources });
     }
@@ -249,6 +293,7 @@ app.get("/cases-sec4", (req, res) => {
 });
 app.get("/cases-sec5", (req, res) => {
     sectionNum = 5;
+    const resources = db.prepare("SELECT * FROM files WHERE sectionNum = ? AND type = 0").all(sectionNum);
     if (!req.user) {
         res.render("Exams", { sectionNum, admin: 0, user: req.user, resources });
     }
@@ -260,6 +305,7 @@ app.get("/cases-sec5", (req, res) => {
 });
 app.get("/cases-sec6", (req, res) => {
     sectionNum = 6;
+    const resources = db.prepare("SELECT * FROM files WHERE sectionNum = ? AND type = 0").all(sectionNum);
     if (!req.user) {
         res.render("Exams", { sectionNum, admin: 0, user: req.user, resources });
     }
