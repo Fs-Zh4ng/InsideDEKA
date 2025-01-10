@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -12,60 +11,34 @@
     <%- include('includes/nav') %>
 
     <div class="container" style="margin-top: 5rem;">
-        <h1 class="text-center" style="font-family: 'Times New Roman', Times, serif; font-size: 4rem; color: #002a5e; font-weight: bold;">Exams Cluster <%- sectionNum %></h1>
+        <h1 class="text-center" style="font-family: 'Times New Roman', Times, serif; font-size: 4rem; color: #002a5e; font-weight: bold;">Create Resource</h1>
     </div>
 
-    <div class="container margtop" style="margin-bottom: 4rem;">
+    <div class="container" style="margin-bottom: 4rem; margin-top: 4rem;" >
         <div class="row ht">
-            <div class="col-2">
-            </div>
-            <div class="col-2">
-                <h1 class="text-center txt-clr2">Resources</h1>
-            </div>
-            <div class="col-5">
-            </div>
-            <% if (user && admin == 1) { %>
-                <div class="col-1">
-                    <a href="/exams/create" class="btn btn-primary">Create</a>
-                </div>
-            <% } %>
-            <div class="col-2"></div>
-        </div>
-
-        <% resources.forEach(resource => { %>
-            <div class="row">
-            <div class="col-2"></div>
-            <div class="col-8 mb-3">
-                <div class="card">
-                    <div class="card-body" style="margin-left: 1rem;">
-                        <h class="card-title" style="margin-left: 1.4rem;"><a href="/pdf/<%= resource.filePath %>" target="_blank"><%= resource.name %></a></h>
-                        <div class="container-fluid">
-                        <div class="row">
-                            <div class="col-10">
-                                <p class="card-text"><%= resource.description %></p>
-                            </div>
-                            <div class="col-2">
-                                <% if (user && admin == 1) { %>
-                                    <a href="/edit/<%= resource._id %>" class="btn btn-primary">Edit</a>
-                                <% } %>
-                            </div>
-                        </div>
+            <div class="col-3"></div>
+            <form class="col-6" action="/create-exam" method="POST" enctype="multipart/form-data">
+                <% errors.forEach(error => { %>
+                    <div class="alert alert-danger" role="alert">
+                        <%= error %>
                     </div>
-                </div>
-                        
-            </div>
+                <% }) %>
+
+                <label for="name" class="form-label">Name</label>
+                <input type="text" class="form-control" name="name" id="name" placeholder="Name" autocomplete="off">
+                
+                <label for="description" class="form-label">Description</label>
+                <textarea class="form-control" id="description" name="description" placeholder="description"></textarea>
+                
+                <label for="file" class="form-label">Upload File</label>
+                <input type="file" class="form-control" name="file" id="file">
+
+                <br/>
+                <button class="btn btn-primary">Create</button>
+            </form>
         </div>
-            </div>
-            <% }) %>
-        
-
     </div>
-
-    <script>
-        function openFile(filePath) {
-            window.open(filePath, '_blank');
-        }
-    </script>
+    
     <%- include("includes/foot") %>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js" integrity="sha384-0pUGZvbkm6XF6gxjEnlmuGrJXVbNuzT9qBBavbLwCsOGabYfZo0T0to5eqruptLy" crossorigin="anonymous"></script>
