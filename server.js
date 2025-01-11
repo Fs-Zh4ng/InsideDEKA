@@ -8,6 +8,7 @@ const db = require("better-sqlite3")("InsideDEKA.db");
 db.pragma("Journal_Mode = WAL");
 const bodyParser = require("body-parser");
 const path = require("path");
+const fs = require("fs");
 
 
 const CreateTables = db.transaction(() => {
@@ -29,18 +30,18 @@ const CreateTables = db.transaction(() => {
             uploadDate TEXT
         );
     `).run();
-    db.exec(`
+    db.prepare(`
         CREATE TABLE IF NOT EXISTS settings (
             key TEXT PRIMARY KEY,
             value TEXT
         );
-    `);
-    db.prepare("CREATE INDEX IF NOT EXISTS sectionNumIndex ON files (sectionNum)").run();
+    `).run();
 })
 
 CreateTables();
 
 const app = express();
+app.set("view engine", "ejs");
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(express.static("public"));
@@ -81,7 +82,7 @@ const CaseStorage = multer.diskStorage({
     }
 });
 
-const store = multer({ storage: storage });
+const store = multer({ storage: CaseStorage });
 
 app.use(function (req, res, next) {
     res.locals.errors = [];
@@ -112,12 +113,13 @@ app.post("/create-exam", upload.single('file'), (req, res) => {
         return res.render("Create", { errors: ["All fields are required"] });
     }
     console.log(file.filename);
+    console.log(file.id);
 
     const insertFile = db.prepare(`
         INSERT INTO files (sectionNum, type, name, description, filePath, uploadDate)
         VALUES (?, ?, ?, ?, ?, ?)
     `);
-    insertFile.run(sectionNum, 1, name, description, file.filename, new Date().toISOString());
+    const info = insertFile.run(sectionNum, 1, name, description, file.filename, new Date().toISOString());
 
     // Handle the file and form data as needed
     console.log("File uploaded:", file);
@@ -143,10 +145,9 @@ app.post("/create-case", store.single('file'), (req, res) => {
         INSERT INTO files (sectionNum, type, name, description, filePath, uploadDate)
         VALUES (?, ?, ?, ?, ?, ?)
     `);
-    insertFile.run(sectionNum, 0, name, description, file.filename, new Date().toISOString());
+    const info = insertFile.run(sectionNum, 1, name, description, file.filename, new Date().toISOString());
 
-    // Handle the file and form data as needed
-    console.log("File uploaded:", file);
+    // Retrieve the file ID
 
     // Redirect to the Exams or Cases page
     res.redirect(`/cases-sec${sectionNum}`); // Change to "/cases" if needed
@@ -165,9 +166,8 @@ app.get("/cases/create", (req, res) => {
 });
 
 app.get("/exams-sec1", (req, res) => {
-    sectionNum = 1;
+    updateSectionNum(1);
     const resources = db.prepare("SELECT * FROM files WHERE sectionNum = ? AND type = 1").all(sectionNum);
-    console.log(resources);
     if (!req.user) {
         res.render("Exams", { sectionNum, admin: 0, user: req.user, resources });
     }
@@ -178,7 +178,7 @@ app.get("/exams-sec1", (req, res) => {
     res.render("Exams", { sectionNum, admin, user: req.user, resources });
 });
 app.get("/exams-sec2", (req, res) => {
-    sectionNum = 2;
+    updateSectionNum(2);
     const resources = db.prepare("SELECT * FROM files WHERE sectionNum = ? AND type = 1").all(sectionNum);
     console.log(resources);
     if (!req.user) {
@@ -191,7 +191,7 @@ app.get("/exams-sec2", (req, res) => {
     res.render("Exams", { sectionNum, admin, user: req.user, resources });
 });
 app.get("/exams-sec3", (req, res) => {
-    sectionNum = 3;
+    updateSectionNum(3);
     const resources = db.prepare("SELECT * FROM files WHERE sectionNum = ? AND type = 1").all(sectionNum);
 
     if (!req.user) {
@@ -204,7 +204,7 @@ app.get("/exams-sec3", (req, res) => {
     res.render("Exams", { sectionNum, admin, user: req.user, resources });
 });
 app.get("/exams-sec4", (req, res) => {
-    sectionNum = 4;
+    updateSectionNum(4);
     const resources = db.prepare("SELECT * FROM files WHERE sectionNum = ? AND type = 1").all(sectionNum);
 
     if (!req.user) {
@@ -217,7 +217,7 @@ app.get("/exams-sec4", (req, res) => {
     res.render("Exams", { sectionNum, admin, user: req.user, resources });
 });
 app.get("/exams-sec5", (req, res) => {
-    sectionNum = 5;
+    updateSectionNum(5);
     const resources = db.prepare("SELECT * FROM files WHERE sectionNum = ? AND type = 1").all(sectionNum);
 
     if (!req.user) {
@@ -230,7 +230,7 @@ app.get("/exams-sec5", (req, res) => {
     res.render("Exams", { sectionNum, admin, user: req.user, resources });
 });
 app.get("/exams-sec6", (req, res) => {
-    sectionNum = 6;
+    updateSectionNum(6);
     const resources = db.prepare("SELECT * FROM files WHERE sectionNum = ? AND type = 1").all(sectionNum);
 
     if (!req.user) {
@@ -244,7 +244,7 @@ app.get("/exams-sec6", (req, res) => {
 });
 
 app.get("/cases-sec1", (req, res) => {
-    sectionNum = 1;
+    updateSectionNum(1);
     const resources = db.prepare("SELECT * FROM files WHERE sectionNum = ? AND type = 0").all(sectionNum);
     if (!req.user) {
         res.render("Exams", { sectionNum, admin: 0, user: req.user, resources });
@@ -256,7 +256,7 @@ app.get("/cases-sec1", (req, res) => {
     res.render("Cases", { sectionNum, admin, user: req.user, resources });
 });
 app.get("/cases-sec2", (req, res) => {
-    sectionNum = 2;
+    updateSectionNum(2);
     const resources = db.prepare("SELECT * FROM files WHERE sectionNum = ? AND type = 0").all(sectionNum);
     if (!req.user) {
         res.render("Exams", { sectionNum, admin: 0, user: req.user, resources });
@@ -268,7 +268,7 @@ app.get("/cases-sec2", (req, res) => {
     res.render("Cases", { sectionNum, admin, user: req.user, resources });
 });
 app.get("/cases-sec3", (req, res) => {
-    sectionNum = 3;
+    updateSectionNum(3);
     const resources = db.prepare("SELECT * FROM files WHERE sectionNum = ? AND type = 0").all(sectionNum);
     if (!req.user) {
         res.render("Exams", { sectionNum, admin: 0, user: req.user, resources });
@@ -280,7 +280,7 @@ app.get("/cases-sec3", (req, res) => {
     res.render("Cases", { sectionNum, admin, user: req.user, resources });
 });
 app.get("/cases-sec4", (req, res) => {
-    sectionNum = 4;
+    updateSectionNum(4);
     const resources = db.prepare("SELECT * FROM files WHERE sectionNum = ? AND type = 0").all(sectionNum);
     if (!req.user) {
         res.render("Exams", { sectionNum, admin: 0, user: req.user, resources });
@@ -292,7 +292,7 @@ app.get("/cases-sec4", (req, res) => {
     res.render("Cases", { sectionNum, admin, user: req.user, resources });
 });
 app.get("/cases-sec5", (req, res) => {
-    sectionNum = 5;
+    updateSectionNum(5);
     const resources = db.prepare("SELECT * FROM files WHERE sectionNum = ? AND type = 0").all(sectionNum);
     if (!req.user) {
         res.render("Exams", { sectionNum, admin: 0, user: req.user, resources });
@@ -304,7 +304,7 @@ app.get("/cases-sec5", (req, res) => {
     res.render("Cases", { sectionNum, admin, user: req.user, resources });
 });
 app.get("/cases-sec6", (req, res) => {
-    sectionNum = 6;
+    updateSectionNum(6);
     const resources = db.prepare("SELECT * FROM files WHERE sectionNum = ? AND type = 0").all(sectionNum);
     if (!req.user) {
         res.render("Exams", { sectionNum, admin: 0, user: req.user, resources });
@@ -316,8 +316,72 @@ app.get("/cases-sec6", (req, res) => {
     res.render("Cases", { sectionNum, admin, user: req.user, resources });
 });
 
+app.get('/edit/:id', (req, res) => {
+    const fileId = req.params.id;
+    const file = db.prepare("SELECT * FROM files WHERE id = ?").get(fileId);
+    if (file) {
+        res.render("Edit", { file });
+    } else {
+        res.render("homepage");
+    }
+});
 
-app.set("view engine", "ejs");
+app.post('/update-exam/:id', upload.single('file'), (req, res) => {
+    const { name, description, currentFilePath } = req.body;
+    const file = req.file;
+    const fileId = req.params.id;
+
+    let filePath = currentFilePath;
+    if (file) {
+        filePath = `${file.filename}`;
+    }
+
+    const updateFile = db.prepare(`
+        UPDATE files
+        SET name = ?, description = ?, filePath = ?, uploadDate = ?
+        WHERE id = ?
+    `);
+    updateFile.run(name, description, filePath, new Date().toISOString(), fileId);
+
+    // Redirect to the Exams or Cases page
+    res.redirect(`/exams-sec${sectionNum}`); // Change to "/cases" if needed
+});
+
+app.post('/delete-file/:id', (req, res) => {
+    const fileId = req.params.id;
+    // Retrieve the file information
+    const file = db.prepare("SELECT * FROM files WHERE id = ?").get(fileId);
+    const fileType = file.type;
+    if (file) {
+        let filePath = ""
+        // Delete the file from the file system
+        if (fileType == 1) {
+            filePath = path.join(__dirname, 'Exam Resources', file.filePath);
+        } else if (fileType == 2) {
+            filePath = path.join(__dirname, 'Case Resources', file.filePath);
+        }
+        fs.unlink(filePath, (err) => {
+            if (err) {
+                console.error("Error deleting file:", err);
+                return res.status(500).send("Error deleting file");
+            }
+
+            // Delete the file from the database
+            db.prepare("DELETE FROM files WHERE id = ?").run(fileId);
+
+            // Redirect to the appropriate page based on file type
+            if (fileType == 1) {
+                res.redirect(`/exams-sec${sectionNum}`);
+            } else if (fileType == 2) {
+                res.redirect(`/cases-sec${sectionNum}`);
+            } else {
+                res.redirect('/');
+            }
+        });
+    } else {
+        res.status(404).send('File not found');
+    }
+});
 
 app.get("/", (req, res) => {
     res.render("homepage");
