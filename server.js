@@ -48,6 +48,9 @@ app.use(express.static("public"));
 app.use(cookieParser());
 
 app.use('/Exam Resources', express.static(path.join(__dirname, 'Exam Resources')));
+app.use('/Case Resources', express.static(path.join(__dirname, 'Case Resources')));
+app.use('/public', express.static(path.join(__dirname, 'public')));
+
 
 let sectionNum = 0;
 
@@ -145,7 +148,7 @@ app.post("/create-case", store.single('file'), (req, res) => {
         INSERT INTO files (sectionNum, type, name, description, filePath, uploadDate)
         VALUES (?, ?, ?, ?, ?, ?)
     `);
-    const info = insertFile.run(sectionNum, 1, name, description, file.filename, new Date().toISOString());
+    const info = insertFile.run(sectionNum, 0, name, description, file.filename, new Date().toISOString());
 
     // Retrieve the file ID
 
