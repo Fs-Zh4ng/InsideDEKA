@@ -10,12 +10,16 @@
 </head>
 <body>
     <%- include('includes/nav') %>
-    <img src="/resources/Front Page Background.jpg" class="img-fluid ht" alt="Responsive image">
-
+    <div class="background-container">
+      <img src="/resources/Background1.jpeg" class="img-fluid ht" alt="Responsive image">
+      <div class="overlay" style="justify-content: center; align-items: center;">
+        <div class="centered-text">Success Made Simple</div>
+      </div>
+  </div>
     <div class="container-fluid cnt-bg">
         <div class="row justify-content-center">
         <div class="text-center col-12 col-md-6">
-            <p class="txt-clr2">InsideDEKA is a student-led start-up that aims to develop the next generation of leaders, dreamers, and academic achievers.
+            <p class="txt-clr2">DEKA is a student-led start-up that aims to develop the next generation of leaders, dreamers, and academic achievers.
             </p>
         </div>
     </div>
@@ -125,6 +129,33 @@
 </html>
 
 <style>
+  .background-container {
+    position: relative;
+}
+
+.background-container img {
+    width: 100%;
+    height: auto;
+}
+.background-container .centered-text {
+    color: white;
+    font-size: 6rem;
+    font-weight: bold;
+    text-align: center;
+    font-family: 'Times New Roman', Times, serif;
+}
+
+.background-container .overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.25); /* Black color with 50% opacity */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
     .nav-bg {
         background-color: #002a5e;
     }
